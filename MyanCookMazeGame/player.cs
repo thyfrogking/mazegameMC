@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using static System.Console;
 
-namespace ExplorableWorld
+namespace MyanCookMazeGame
 {
     internal class Player
     {

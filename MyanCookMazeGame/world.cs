@@ -40,6 +40,14 @@ namespace MyanCookMazeGame
             return Grid[y, x];
         }
 
+        public string SetElementAt(int x, int y, string name )
+        {
+            Console.WriteLine(name);
+            return Grid[y, x];
+        }
+
+
+
         //says if player can walk on the space
         public bool Walkability(int x, int y)
         {
@@ -49,10 +57,14 @@ namespace MyanCookMazeGame
                 return false;
             }
 
-            return Grid[y, x] == " " || Grid[y, x] == "X";
+
+            return Grid[y, x] == " " || Grid[y, x] == "X" || Grid[y, x] == "c";
+
 
         }
 
-
+   
+        
+            
     }
 }

@@ -1,7 +1,8 @@
-﻿using ExplorableWorld;
+﻿using MyanCookMazeGame;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using static System.Console;
 
@@ -11,23 +12,36 @@ namespace MyanCookMazeGame
     {
         private World MyWorld;
         private Player CurrentPlayer;
+        int score = 0;
+        int collected = 0;
+        int totalcoins = 0;
+       
+
         public void Start()
         {
-            string[,] grid = {
+            
+            CursorVisible = false;
 
-                {"=", "=", "=", "=", "=", "=", "=" },
-                {"=", " ", "=", " ", " ", " ", "X" },
-                {" ", " ", "=", " ", "=", " ", "=" },
-                {"=", " ", "=", " ", "=", " ", "=" },
-                {"=", " ", " ", " ", "=", " ", "=" },
-                {"=", "=", "=", "=", "=", "=", "=" },
-            };
+            string[,] grid = levelPusher.TextFileToArray("mazeLeveltxt");
+            
            
             MyWorld = new World(grid);
 
-            CurrentPlayer = new Player(0, 2);
+            for (int y = 0; y < grid.GetLength(0); y++)
+            {
+                for (int x = 0; x < grid.GetLength(1); x++)
+                {
+                    if (grid[y, x] == "c")
+                        totalcoins++;
+                }
+            }
 
+
+            CurrentPlayer = new Player(1, 1);
+           
+           
             RunGameLoop();
+            
 
         }
 
@@ -52,56 +66,91 @@ namespace MyanCookMazeGame
             WriteLine("press any key to exit");
             ReadKey(true);
         }
+
+    
         private void DrawFrame()
         {
+            
             Clear();
             MyWorld.Draw();
             CurrentPlayer.Draw();
-            
+          
+            SetCursorPosition(20, 20);
+
+            WriteLine("your score is" + score);
+
         }
+
 
         private void HandlePlayerInput()
         {
-            ConsoleKeyInfo keyInfo = ReadKey(true);
-            ConsoleKey key = keyInfo.Key;
+
+            ConsoleKey key;
+            do
+            {
+                ConsoleKeyInfo keyInfo = ReadKey(true);
+                key = keyInfo.Key;
+
+
+            } while (KeyAvailable);
+
+            if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y))
+            {
+
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
-                    if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y - 1))
-                    {
-                        CurrentPlayer.Y -= 1;
-                    }
-                    break;
+                        if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y - 1))
+                        {
+                            CurrentPlayer.Y -= 1;
+                        }
+                        break;
                     case ConsoleKey.DownArrow:
-                    if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y + 1))
-                    {
-                        CurrentPlayer.Y += 1;
-                    }
-                    break;
+                        if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y + 1))
+                        {
+                            CurrentPlayer.Y += 1;
+                        }
+                        break;
                     case ConsoleKey.LeftArrow:
-                    if (MyWorld.Walkability(CurrentPlayer.X - 1, CurrentPlayer.Y))
-                    {
-                        CurrentPlayer.X -= 1;
-                    }
-                       break;
+                        if (MyWorld.Walkability(CurrentPlayer.X - 1, CurrentPlayer.Y))
+                        {
+                            CurrentPlayer.X -= 1;
+                        }
+                        break;
                     case ConsoleKey.RightArrow:
-                    if (MyWorld.Walkability(CurrentPlayer.X + 1, CurrentPlayer.Y))
-                    {
-                        CurrentPlayer.X += 1;
-                    }
-                       break;
+                        if (MyWorld.Walkability(CurrentPlayer.X + 1, CurrentPlayer.Y))
+                        {
+                            CurrentPlayer.X += 1;
+                        }
+                        break;
                     default:
-                    break;
+                        break;
+
+                    
 
                 }
 
 
 
 
+            }
+            if (MyWorld.Walkability(CurrentPlayer.X, CurrentPlayer.Y))
+            { 
+             string elementThere = MyWorld.GetElementAt(CurrentPlayer.X, CurrentPlayer.Y);
+                if (elementThere == "c")
+                {
+                    score += 1;
+                    collected++;
+                    MyWorld.SetElementAt(CurrentPlayer.X, CurrentPlayer.Y, " ");
+                    
+                }
+            }
         }
 
         private void RunGameLoop()
         {
+
+
             DisplayIntro();
             while (true)
             {
